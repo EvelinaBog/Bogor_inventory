@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Inventory & Order Management{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js biblioteka -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .navbar {
+            background-color: #343a40;
+            color: #fff;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 1rem;
+        }
+        .profile {
+            display: flex;
+            align-items: center;
+        }
+        .profile i {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        .sidebar {
+            background-color: #343a40;
+            color: #fff;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            padding-top: 2rem;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            padding: 1rem 1.5rem;
+            margin: 0.5rem 0;
+        }
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            flex: 1;
+        }
+        .container {
+            background: #fff;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .btn {
+            background-color: #28a745;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .footer {
+            background-color: #343a40;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            margin-top: auto;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+<div class="navbar">
+    <div class="logo">
+        <a href="#">Satin Rose Bouquets</a>
+    </div>
+    <div class="nav-links">
+        {% if user.is_authenticated %}
+        <div class="profile">
+            <i class="bi bi-person-circle"></i>
+            <span>{{ user.username }}</span>
+            <a href="#" style="margin-left: 1rem;">Logout</a>
+        </div>
+        {% else %}
+        <a href="#">Login</a>
+        {% endif %}
+    </div>
+</div>
+<div class="sidebar">
+    <a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="#"><i class="fas fa-box"></i> Orders</a>
+    <a href="{% url 'inventory' %}"><i class="fas fa-warehouse"></i> Inventory</a>
+    <a href="#"><i class="fas fa-chart-bar"></i> Statistics</a>
+    <!-- Add more sidebar links as needed -->
+</div>
+<div class="main-content">
+    {% block content %}
+    {% endblock %}
+</div>
+<div class="footer">
+    &copy; 2024 Satin Rose Bouquets. All rights reserved.
+</div>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

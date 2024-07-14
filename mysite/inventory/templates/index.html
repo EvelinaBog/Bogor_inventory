@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-4 col-md-6 mb-4">
+        <!-- Card for Sales Earnings -->
+        <div class="card border border-right-0 border-top-0 border-bottom-0 p-2 border-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Sales Earnings
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-cash-coin fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6 mb-4">
+        <!-- Card for Total Expenses -->
+        <div class="card border border-right-0 border-top-0 border-bottom-0 p-2 border-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Total Expenses
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ expenses }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-cash fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6 mb-4">
+        <!-- Card for Total Profit -->
+        <div class="card border border-width-3 border-right-0 border-top-0 border-bottom-0 p-2 border-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Total Profit
+                        </div>
+                            <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ profit }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-cash-stack fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border p-2 shadow h-100 py-2">
+            <div class="card-body">
+                <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                    Silk Remaining
+                </div>
+                {% for color, remaining in silk_data_zipped %}
+                {% if remaining >= 100 %}
+                {% with 'bg-success' as bar_color %}
+                <h4 class="small font-weight-bold">{{ color }} <span class="float-right">{{ remaining }}%</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar {{ bar_color }}" role="progressbar" style="width: {{ remaining }}%"
+                         aria-valuenow="{{ remaining }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                {% endwith %}
+                {% elif remaining >= 51 %}
+                {% with 'bg-info' as bar_color %}
+                <h4 class="small font-weight-bold">{{ color }} <span class="float-right">{{ remaining }}%</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar {{ bar_color }}" role="progressbar" style="width: {{ remaining }}%"
+                         aria-valuenow="{{ remaining }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                {% endwith %}
+                {% elif remaining >= 21 %}
+                {% with 'bg-warning' as bar_color %}
+                <h4 class="small font-weight-bold">{{ color }} <span class="float-right">{{ remaining }}%</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar {{ bar_color }}" role="progressbar" style="width: {{ remaining }}%"
+                         aria-valuenow="{{ remaining }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                {% endwith %}
+                {% else %}
+                {% with 'bg-danger' as bar_color %}
+                <h4 class="small font-weight-bold">{{ color }} <span class="float-right">{{ remaining }}%</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar {{ bar_color }}" role="progressbar" style="width: {{ remaining }}%"
+                         aria-valuenow="{{ remaining }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                {% endwith %}
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border p-2 shadow h-100 py-2">
+            <div class="card-body">
+                <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                    Decorations Remaining
+                </div>
+                {% for name, remaining in decoration_data_zipped %}
+                {% if remaining >= 50 %}
+                {% with 'bg-success' as bar_color %}
+                <h4 class="small font-weight-bold">{{ name }} <span class="float-right">{{ remaining }}%</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar {{ bar_color }}" role="progressbar" style="width: {{ remaining }}%"
+                         aria-valuenow="{{ remaining }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                {% endwith %}
+                {% elif remaining >= 26 %}
+                {% with 'bg-info' as bar_color %}
+                <h4 class="small font-weight-bold">{{ name }} <span class="float-right">{{ remaining }}%</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar {{ bar_color }}" role="progressbar" style="width: {{ remaining }}%"
+                         aria-valuenow="{{ remaining }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                {% endwith %}
+                {% elif remaining >= 11 %}
+                {% with 'bg-warning' as bar_color %}
+                <h4 class="small font-weight-bold">{{ name }} <span class="float-right">{{ remaining }}%</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar {{ bar_color }}" role="progressbar" style="width: {{ remaining }}%"
+                         aria-valuenow="{{ remaining }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                {% endwith %}
+                {% else %}
+                {% with 'bg-danger' as bar_color %}
+                <h4 class="small font-weight-bold">{{ name }} <span class="float-right">{{ remaining }}%</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar {{ bar_color }}" role="progressbar" style="width: {{ remaining }}%"
+                         aria-valuenow="{{ remaining }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                {% endwith %}
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+            <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border p-2 shadow h-100 py-2">
+            <div class="card-body">
+                <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                    Materials Remaining
+                </div>
+                {% for name, remaining in materials_data_zipped %}
+                {% if remaining >= 100 %}
+                {% with 'bg-success' as bar_color %}
+                <h4 class="small font-weight-bold">{{ name }} <span class="float-right">{{ remaining }}%</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar {{ bar_color }}" role="progressbar" style="width: {{ remaining }}%"
+                         aria-valuenow="{{ remaining }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                {% endwith %}
+                {% elif remaining >= 51 %}
+                {% with 'bg-info' as bar_color %}
+                <h4 class="small font-weight-bold">{{ name }} <span class="float-right">{{ remaining }}%</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar {{ bar_color }}" role="progressbar" style="width: {{ remaining }}%"
+                         aria-valuenow="{{ remaining }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                {% endwith %}
+                {% elif remaining >= 21 %}
+                {% with 'bg-warning' as bar_color %}
+                <h4 class="small font-weight-bold">{{ name }} <span class="float-right">{{ remaining }}%</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar {{ bar_color }}" role="progressbar" style="width: {{ remaining }}%"
+                         aria-valuenow="{{ remaining }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                {% endwith %}
+                {% else %}
+                {% with 'bg-danger' as bar_color %}
+                <h4 class="small font-weight-bold">{{ name }} <span class="float-right">{{ remaining }}%</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar {{ bar_color }}" role="progressbar" style="width: {{ remaining }}%"
+                         aria-valuenow="{{ remaining }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                {% endwith %}
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
