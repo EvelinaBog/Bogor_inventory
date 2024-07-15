@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Silk, Decorations, Materials, Order
-from .forms import SilkForm, DecorationsForm, MaterialsForm
+from .models import Silk, Decorations, Materials, Order, OrderLine, DecorationLine, Client, Product
+from .forms import SilkForm, DecorationsForm, MaterialsForm, OrderForm, OrderLineForm, DecorationLineForm, ClientForm
+from django.forms import inlineformset_factory
 
 
 def index(request):
@@ -121,3 +122,98 @@ def create_material(request):
     else:
         form = MaterialsForm()
     return render(request, 'create_material.html', {'form': form})
+
+
+def orders(request):
+    order_list = Order.objects.all()
+    return render(request, 'orders.html', {'orders': order_list})
+
+
+def add_order_line(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        form = OrderLineForm(request.POST)
+        if form.is_valid():
+            order_line = form.save(commit=False)
+            order_line.order = order
+            order_line.save()
+            return redirect('order_detail', order_id=order.id)
+    else:
+        form = OrderLineForm()
+    return render(request, 'add_order_line.html', {'form': form, 'order': order})
+
+
+def add_decoration_line(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        form = DecorationLineForm(request.POST)
+        if form.is_valid():
+            decoration_line = form.save(commit=False)
+            decoration_line.order = order
+            decoration_line.save()
+            return redirect('order_detail', order_id=order.id)
+    else:
+        form = DecorationLineForm()
+    return render(request, 'add_decoration_line.html', {'form': form, 'order': order})
+
+
+def edit_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    OrderLineFormSet = inlineformset_factory(Order, OrderLine, form=OrderLineForm, extra=0, can_delete=True)
+    DecorationLineFormSet = inlineformset_factory(Order, DecorationLine, form=DecorationLineForm, extra=1, can_delete=True)
+
+    if request.method == 'POST':
+        order_form = OrderForm(request.POST, instance=order)
+        order_line_formset = OrderLineFormSet(request.POST, instance=order)
+        decoration_line_formset = DecorationLineFormSet(request.POST, instance=order)
+
+        if order_form.is_valid() and order_line_formset.is_valid() and decoration_line_formset.is_valid():
+            order_form.save()
+            order_line_formset.save()
+            decoration_line_formset.save()
+            return redirect('orders')
+    else:
+        order_form = OrderForm(instance=order)
+        order_line_formset = OrderLineFormSet(instance=order)
+        decoration_line_formset = DecorationLineFormSet(instance=order)
+
+    return render(request, 'edit_order.html', {
+        'order_form': order_form,
+        'formset': order_line_formset,
+        'decoration_line_formset': decoration_line_formset,
+    })
+
+def add_order(request):
+    DecorationLineFormSet = inlineformset_factory(Order, DecorationLine, form=DecorationLineForm, extra=1, can_delete=True)
+
+    if request.method == 'POST':
+        client_form = ClientForm(request.POST)
+        order_form = OrderForm(request.POST)
+        order_line_form = OrderLineForm(request.POST)
+        decoration_line_formset = DecorationLineFormSet(request.POST)
+
+        if client_form.is_valid() and order_form.is_valid() and order_line_form.is_valid() and decoration_line_formset.is_valid():
+            client = client_form.save()
+            order = order_form.save(commit=False)
+            order.client = client
+            order.save()
+            order_line = order_line_form.save(commit=False)
+            order_line.order = order
+            order_line.save()
+
+            decoration_line_formset.instance = order
+            decoration_line_formset.save()
+
+            return redirect('orders')  # Replace with the name of your order list view
+    else:
+        client_form = ClientForm()
+        order_form = OrderForm()
+        order_line_form = OrderLineForm()
+        decoration_line_formset = DecorationLineFormSet()
+
+    return render(request, 'add_order.html', {
+        'client_form': client_form,
+        'order_form': order_form,
+        'order_line_form': order_line_form,
+        'decoration_line_formset': decoration_line_formset,
+    })

@@ -1,7 +1,5 @@
 from django.db import models
 
-# Create your models here.
-
 
 class Silk(models.Model):
     color = models.CharField(verbose_name='Color', max_length=20)
@@ -88,27 +86,36 @@ class Product(models.Model):
 
 class Order(models.Model):
     client = models.ForeignKey('Client', on_delete=models.CASCADE, null=True)
-    product = models.ForeignKey('Product', on_delete=models.CASCADE, null=True)
-    wrapping_paper = models.ForeignKey('Materials', on_delete=models.CASCADE, null=True)
+    wrapping_paper = models.ForeignKey('Materials', on_delete=models.SET_NULL, null=True, blank=True,
+                                       related_name='wrapping_paper')
+    wrapping_paper_qty = models.IntegerField(verbose_name='Wrapping Paper Quantity', default=0, blank=True, null=True)
 
     def total(self):
-        wrapping_paper = self.wrappingpaper_set.all()
-        total_paper_price = sum(paper.wrapping_paper.price * paper.paper_qty for paper in wrapping_paper)
+        total_paper_price = 0
+        if self.wrapping_paper and self.wrapping_paper_qty:
+            total_paper_price = self.wrapping_paper.price * self.wrapping_paper_qty
+
         order_line = self.orderline_set.all()
         total_product_price = sum(item.product.price * item.qty for item in order_line)
+
         dec_line = self.decorationline_set.all()
         total_decoration_price = sum(dec.decorations.price * dec.dec_qty for dec in dec_line)
+
         return round(total_product_price + total_decoration_price + total_paper_price, 2)
 
     total.short_description = 'Total'
 
     def expenses(self):
-        wrapping_paper = self.wrappingpaper_set.all()
-        total_paper_cost = sum(paper.wrapping_paper.cost * paper.paper_qty for paper in wrapping_paper)
+        total_paper_cost = 0
+        if self.wrapping_paper and self.wrapping_paper_qty:
+            total_paper_cost = self.wrapping_paper.cost * self.wrapping_paper_qty
+
         order_line = self.orderline_set.all()
         total_product_cost = sum(item.product.cost() * item.qty for item in order_line)
+
         dec_line = self.decorationline_set.all()
         total_decoration_cost = sum(dec.decorations.cost * dec.dec_qty for dec in dec_line)
+
         return round(total_product_cost + total_decoration_cost + total_paper_cost, 2)
 
     def profit(self):
@@ -146,9 +153,15 @@ class DecorationLine(models.Model):
 
 
 class WrappingPaper(models.Model):
-    order = models.ForeignKey('Order', on_delete=models.CASCADE, null=True)
-    wrapping_paper = models.ForeignKey('Materials', on_delete=models.CASCADE, null=True)
-    paper_qty = models.IntegerField(verbose_name='Wrapping paper quantity', default=0)
+    use_wrapping_paper = models.BooleanField('Use Wrapping Paper', default=False)
+    wrapping_paper = models.ForeignKey('Materials', on_delete=models.CASCADE, null=True, blank=True)
+    paper_qty = models.IntegerField(verbose_name='Wrapping Paper Quantity', default=0, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.use_wrapping_paper:
+            self.wrapping_paper = None
+            self.paper_qty = 0
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Wrapping Paper'
@@ -165,4 +178,3 @@ class Client(models.Model):
     class Meta:
         verbose_name = 'Client'
         verbose_name_plural = 'Clients'
-

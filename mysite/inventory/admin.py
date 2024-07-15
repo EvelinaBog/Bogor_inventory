@@ -82,9 +82,6 @@ class DecorationLineAdmin(admin.ModelAdmin):
     get_remaining.short_description = 'Decorations Remaining'
 
 
-class WrappingPaperAdmin(admin.ModelAdmin):
-    list_display = ('order', 'wrapping_paper', 'paper_qty')
-
 
 admin.site.register(Silk, SilkAdmin)
 admin.site.register(Decorations, DecorationsAdmin)
@@ -94,4 +91,4 @@ admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderLine, OrderLineAdmin)
 admin.site.register(Client)
 admin.site.register(DecorationLine, DecorationLineAdmin)
-admin.site.register(WrappingPaper, WrappingPaperAdmin)
+admin.site.register(WrappingPaper)

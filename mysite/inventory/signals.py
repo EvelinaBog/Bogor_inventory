@@ -1,13 +1,12 @@
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from .models import OrderLine, DecorationLine, WrappingPaper, Materials
+from .models import OrderLine, DecorationLine, WrappingPaper, Order
 
 
 @receiver(post_save, sender=WrappingPaper)
-@receiver(post_delete, sender=WrappingPaper)
 def update_wrapping_paper_remaining(sender, instance, **kwargs):
-    paper_qty_change = instance.paper_qty if kwargs.get('created', True) else -instance.paper_qty
-    instance.wrapping_paper.update_remaining(paper_qty_change)
+    if instance.use_wrapping_paper and instance.wrapping_paper is not None and instance.paper_qty:
+        instance.wrapping_paper.update_remaining(instance.paper_qty)
 
 
 @receiver(post_save, sender=OrderLine)
@@ -23,3 +22,9 @@ def update_silk_and_material_remaining(sender, instance, **kwargs):
 @receiver(post_delete, sender=DecorationLine)
 def update_decoration_remaining(sender, instance, **kwargs):
     instance.decorations.update_remaining(instance.dec_qty)
+
+
+@receiver(post_save, sender=Order)
+def create_order_lines(sender, instance, created, **kwargs):
+    if created:
+        from .models import WrappingPaper
