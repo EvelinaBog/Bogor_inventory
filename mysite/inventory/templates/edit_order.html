@@ -4,6 +4,8 @@
 
 {% block content %}
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+
 <style>
     .custom-input {
         width: 100%;
@@ -38,7 +40,7 @@
 </style>
 
 <div class="row justify-content-center">
-    <div class="col-lg-8">
+    <div class="col-lg-10">
         <div class="card shadow-lg border-0 rounded-lg">
             <div class="card-header bg-dark text-white">
                 <h3 class="text-center font-weight-light my-4">Edit Order</h3>
@@ -46,61 +48,51 @@
             <div class="card-body">
                 <form method="POST">
                     {% csrf_token %}
-                    <div class="form-group row">
-                        <div class="col-sm-9">
-                            <label for="{{ order_form.wrapping_paper_qty.id_for_label }}" class="form-label"><i
-                                    class="fas fa-box-open"></i> {{ order_form.wrapping_paper_qty.label }}</label>
-                            {{ order_form.wrapping_paper_qty }}
-                        </div>
+                    <div class="form-group">
+                        <label for="{{ order_form.wrapping_paper.id_for_label }}" class="form-label"><i class="fas fa-box"></i> {{ order_form.wrapping_paper.label }}</label>
+                        {{ order_form.wrapping_paper }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ order_form.wrapping_paper_qty.id_for_label }}" class="form-label"><i class="fas fa-box-open"></i> {{ order_form.wrapping_paper_qty.label }}</label>
+                        {{ order_form.wrapping_paper_qty }}
                     </div>
                     <hr>
-                    <div class="mb-3">
+                    <div>
                         {{ formset.management_form }}
                         {% for form in formset %}
-                        <div class="form-group row">
-                            <div class="col-sm-9">
-                                <label for="{{ form.product.id_for_label }}" class="form-label"><i
-                                        class="fas fa-tag"></i> {{ form.product.label }}</label>
-                                {{ form.product }}
-                                {{ form.id }}
-                            </div>
+                        <div class="form-group">
+                            <label for="{{ form.product.id_for_label }}" class="form-label"><i class="fas fa-tag"></i> {{ form.product.label }}</label>
+                            {{ form.product }}
+                            {{ form.id }}
                         </div>
-                        <div class="form-group row">
-                            <div class="col-sm-9">
-                                <label for="{{ form.qty.id_for_label }}" class="form-label"><i
-                                        class="fas fa-sort-amount-up"></i> {{ form.qty.label }}</label>
-                                {{ form.qty }}
-                            </div>
+                        <div class="form-group">
+                            <label for="{{ form.qty.id_for_label }}" class="form-label"><i class="fas fa-sort-amount-up"></i> {{ form.qty.label }}</label>
+                            {{ form.qty }}
                         </div>
                         {% endfor %}
                     </div>
                     <hr>
-                    <div class="mb-3">
+                    <div>
                         {{ decoration_line_formset.management_form }}
                         {% for form in decoration_line_formset %}
-                        <div class="form-group row">
-                            <div class="col-sm-9">
-                                <label for="{{ form.decorations.id_for_label }}" class="form-label">Decoration</label>
-                                {{ form.decorations }}
-                                {{ form.id }}
-                            </div>
+                        <div class="form-group">
+                            <label for="{{ form.decorations.id_for_label }}" class="form-label">Decoration</label>
+                            {{ form.decorations }}
+                            {{ form.id }}
                         </div>
-                        <div class="form-group row">
-                            <div class="col-sm-9">
-                                <label for="{{ form.dec_qty.id_for_label }}" class="form-label">Quantity</label>
-                                {{ form.dec_qty }}
-                            </div>
+                        <div class="form-group">
+                            <label for="{{ form.dec_qty.id_for_label }}" class="form-label">Quantity</label>
+                            {{ form.dec_qty }}
                         </div>
                         {% endfor %}
                     </div>
-                    <div class="d-flex justify-content-between mt-4 mb-0">
-                        <a href="{% url 'orders' %}" class="btn btn-secondary">Back to Orders</a>
-                        <button type="submit" class="btn btn-primary">Save Order</button>
+                    <div class="d-flex justify-content-between mt-3">
+                        <a href="{% url 'orders' %}" class="btn btn-info">Back to orders</a>
+                        <button type="submit" class="btn btn-info"><i class="bi bi-check-lg"></i> Save Changes</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-<a href="{% url 'orders' %}" class="back-btn mt-3">Back to orders</a>
 {% endblock %}

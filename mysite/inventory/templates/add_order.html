@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% block title %}Add Order{% endblock %}
 
-{% block content %}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
 
+{% block content %}
 <h1>Create Order</h1>
 <form method="post">
     {% csrf_token %}
@@ -18,14 +20,16 @@
     <h2>Decorations</h2>
     {{ decoration_line_formset.management_form }}
     {% for form in decoration_line_formset %}
-        <div class="form-group">
-            <label for="{{ form.decorations.id_for_label }}" class="form-label">Decoration</label>
-            {{ form.decorations }}
-            <label for="{{ form.dec_qty.id_for_label }}" class="form-label">Quantity</label>
-            {{ form.dec_qty }}
-        </div>
+    <div class="form-group">
+        <label for="{{ form.decorations.id_for_label }}" class="form-label">Decoration</label>
+        {{ form.decorations }}
+        <label for="{{ form.dec_qty.id_for_label }}" class="form-label">Quantity</label>
+        {{ form.dec_qty }}
+    </div>
     {% endfor %}
-    <a href="{% url 'orders' %}" class="btn btn-primary">Back to orders</a>
-    <button type="submit" class="btn btn-primary">Create Order</button>
+    <div class="d-flex justify-content-between mt-3">
+        <a href="{% url 'orders' %}" class="btn btn-info">Back to orders</a>
+        <button type="submit" class="btn btn-info"><i class="bi bi-check-lg"></i> Create Order</button>
+    </div>
 </form>
 {% endblock %}

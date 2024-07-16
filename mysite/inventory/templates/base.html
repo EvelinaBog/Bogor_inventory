@@ -74,8 +74,6 @@
             border-radius: 8px;
         }
         .btn {
-            background-color: #28a745;
-            color: #fff;
             padding: 0.5rem 1rem;
             text-decoration: none;
             border-radius: 4px;
@@ -84,7 +82,27 @@
             transition: background-color 0.3s;
         }
         .btn:hover {
-            background-color: #218838;
+            color: #fff;
+        }
+        .btn-info-custom {
+            background-color: #17a2b8 !important;
+            color: white !important;
+            border-color: #17a2b8 !important;
+        }
+        .btn-info-custom:hover {
+            background-color: #138496 !important;
+            color: white !important;
+            border-color: #138496 !important;
+        }
+        .btn-danger-custom {
+            background-color: #dc3545 !important;
+            color: white !important;
+            border-color: #dc3545 !important;
+        }
+        .btn-danger-custom:hover {
+            background-color: #c82333 !important;
+            color: white !important;
+            border-color: #c82333 !important;
         }
         .footer {
             background-color: #343a40;
@@ -120,7 +138,7 @@
     <a href="{% url 'index' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
     <a href="{% url 'orders' %}"><i class="fas fa-box"></i> Orders</a>
     <a href="{% url 'inventory' %}"><i class="fas fa-warehouse"></i> Inventory</a>
-    <a href="#"><i class="fas fa-chart-bar"></i> Statistics</a>
+    <a href="{% url 'create_product' %}"><i class="fas fa-chart-bar"></i> Products</a>
     <!-- Add more sidebar links as needed -->
 </div>
 <div class="main-content">

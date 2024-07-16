@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Silk, Decorations, Materials, Order, OrderLine, DecorationLine, Client, Product
-from .forms import SilkForm, DecorationsForm, MaterialsForm, OrderForm, OrderLineForm, DecorationLineForm, ClientForm
+from .forms import SilkForm, DecorationsForm, MaterialsForm, OrderForm, OrderLineForm, DecorationLineForm, ClientForm, \
+    ProductForm
 from django.forms import inlineformset_factory
 
 
@@ -30,9 +31,9 @@ def index(request):
         materials_data_zipped = []
 
     orders = Order.objects.all()
-    total = sum(order.total() for order in orders)
-    expenses = sum(order.expenses() for order in orders)
-    profit = sum(order.profit() for order in orders)
+    total = round(sum(order.total() for order in orders), 2)
+    expenses = round(sum(order.expenses() for order in orders), 2)
+    profit = round(sum(order.profit() for order in orders), 2)
 
     context = {
         'total': total,
@@ -129,6 +130,14 @@ def orders(request):
     return render(request, 'orders.html', {'orders': order_list})
 
 
+def delete_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        order.delete()
+        return redirect('orders')
+    return render(request, 'confirm_delete_order.html', {'order': order})
+
+
 def add_order_line(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     if request.method == 'POST':
@@ -160,7 +169,8 @@ def add_decoration_line(request, order_id):
 def edit_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     OrderLineFormSet = inlineformset_factory(Order, OrderLine, form=OrderLineForm, extra=0, can_delete=True)
-    DecorationLineFormSet = inlineformset_factory(Order, DecorationLine, form=DecorationLineForm, extra=1, can_delete=True)
+    DecorationLineFormSet = inlineformset_factory(Order, DecorationLine, form=DecorationLineForm, extra=1,
+                                                  can_delete=True)
 
     if request.method == 'POST':
         order_form = OrderForm(request.POST, instance=order)
@@ -168,9 +178,12 @@ def edit_order(request, order_id):
         decoration_line_formset = DecorationLineFormSet(request.POST, instance=order)
 
         if order_form.is_valid() and order_line_formset.is_valid() and decoration_line_formset.is_valid():
+            # Adjust inventory before saving changes
+            order.update_inventory(-1)
             order_form.save()
             order_line_formset.save()
             decoration_line_formset.save()
+            order.update_inventory(1)
             return redirect('orders')
     else:
         order_form = OrderForm(instance=order)
@@ -183,8 +196,10 @@ def edit_order(request, order_id):
         'decoration_line_formset': decoration_line_formset,
     })
 
+
 def add_order(request):
-    DecorationLineFormSet = inlineformset_factory(Order, DecorationLine, form=DecorationLineForm, extra=1, can_delete=True)
+    DecorationLineFormSet = inlineformset_factory(Order, DecorationLine, form=DecorationLineForm, extra=1,
+                                                  can_delete=True)
 
     if request.method == 'POST':
         client_form = ClientForm(request.POST)
@@ -204,7 +219,7 @@ def add_order(request):
             decoration_line_formset.instance = order
             decoration_line_formset.save()
 
-            return redirect('orders')  # Replace with the name of your order list view
+            return redirect('orders')
     else:
         client_form = ClientForm()
         order_form = OrderForm()
@@ -217,3 +232,78 @@ def add_order(request):
         'order_line_form': order_line_form,
         'decoration_line_formset': decoration_line_formset,
     })
+
+
+def edit_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    OrderLineFormSet = inlineformset_factory(Order, OrderLine, form=OrderLineForm, extra=0, can_delete=True)
+    DecorationLineFormSet = inlineformset_factory(Order, DecorationLine, form=DecorationLineForm, extra=1,
+                                                  can_delete=True)
+
+    if request.method == 'POST':
+        order_form = OrderForm(request.POST, instance=order)
+        order_line_formset = OrderLineFormSet(request.POST, instance=order)
+        decoration_line_formset = DecorationLineFormSet(request.POST, instance=order)
+
+        if order_form.is_valid() and order_line_formset.is_valid() and decoration_line_formset.is_valid():
+            old_order = get_object_or_404(Order, id=order_id)
+            old_order.adjust_inventory(1)  # Revert old inventory changes
+            order_form.save()
+            order_line_formset.save()
+            decoration_line_formset.save()
+            order.adjust_inventory(-1)  # Apply new inventory changes
+            return redirect('orders')
+    else:
+        order_form = OrderForm(instance=order)
+        order_line_formset = OrderLineFormSet(instance=order)
+        decoration_line_formset = DecorationLineFormSet(instance=order)
+
+    return render(request, 'edit_order.html', {
+        'order_form': order_form,
+        'formset': order_line_formset,
+        'decoration_line_formset': decoration_line_formset,
+    })
+
+
+def delete_silk(request, silk_id):
+    silk = get_object_or_404(Silk, id=silk_id)
+    if request.method == 'POST':
+        silk.delete()
+        return redirect('inventory')
+    return render(request, 'confirm_items_delete.html', {'item': silk, 'type': 'Silk'})
+
+
+def delete_decoration(request, decoration_id):
+    decoration = get_object_or_404(Decorations, id=decoration_id)
+    if request.method == 'POST':
+        decoration.delete()
+        return redirect('inventory')
+    return render(request, 'confirm_items_delete.html', {'item': decoration, 'type': 'Decoration'})
+
+
+def delete_material(request, material_id):
+    material = get_object_or_404(Materials, id=material_id)
+    if request.method == 'POST':
+        material.delete()
+        return redirect('inventory')
+    return render(request, 'confirm_items_delete.html', {'item': material, 'type': 'Material'})
+
+
+def create_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('create_product')
+    else:
+        form = ProductForm()
+    products = Product.objects.all()
+    return render(request, 'products.html', {'form': form, 'products': products})
+
+
+def delete_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    if request.method == 'POST':
+        product.delete()
+        return redirect('create_product')
+    return render(request, 'confirm_delete.html', {'product': product})

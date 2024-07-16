@@ -72,9 +72,9 @@ class Product(models.Model):
     price = models.FloatField(verbose_name='Price', default=0)
 
     def cost(self):
-        return round(self.materials_id.cost + self.color.cost * 1.60, 2)
-
-    cost.short_description = 'Cost'
+        if self.materials_id and self.color:
+            return round(self.materials_id.cost + self.color.cost * 1.60, 2)
+        return 0
 
     def __str__(self):
         return f'{self.color} {self.materials_id} {self.cost()}'
@@ -86,14 +86,11 @@ class Product(models.Model):
 
 class Order(models.Model):
     client = models.ForeignKey('Client', on_delete=models.CASCADE, null=True)
-    wrapping_paper = models.ForeignKey('Materials', on_delete=models.SET_NULL, null=True, blank=True,
-                                       related_name='wrapping_paper')
+    wrapping_paper = models.ForeignKey('Materials', on_delete=models.SET_NULL, null=True, blank=True, related_name='wrapping_paper')
     wrapping_paper_qty = models.IntegerField(verbose_name='Wrapping Paper Quantity', default=0, blank=True, null=True)
 
     def total(self):
-        total_paper_price = 0
-        if self.wrapping_paper and self.wrapping_paper_qty:
-            total_paper_price = self.wrapping_paper.price * self.wrapping_paper_qty
+        total_paper_price = self.wrapping_paper.price * self.wrapping_paper_qty if self.wrapping_paper and self.wrapping_paper_qty else 0
 
         order_line = self.orderline_set.all()
         total_product_price = sum(item.product.price * item.qty for item in order_line)
@@ -106,9 +103,7 @@ class Order(models.Model):
     total.short_description = 'Total'
 
     def expenses(self):
-        total_paper_cost = 0
-        if self.wrapping_paper and self.wrapping_paper_qty:
-            total_paper_cost = self.wrapping_paper.cost * self.wrapping_paper_qty
+        total_paper_cost = self.wrapping_paper.cost * self.wrapping_paper_qty if self.wrapping_paper and self.wrapping_paper_qty else 0
 
         order_line = self.orderline_set.all()
         total_product_cost = sum(item.product.cost() * item.qty for item in order_line)
@@ -119,7 +114,31 @@ class Order(models.Model):
         return round(total_product_cost + total_decoration_cost + total_paper_cost, 2)
 
     def profit(self):
-        return self.total() - self.expenses()
+        return round(self.total() - self.expenses(), 2)
+
+    def adjust_inventory(self, adjust_by):
+        if self.wrapping_paper:
+            self.wrapping_paper.remaining += adjust_by * self.wrapping_paper_qty
+            self.wrapping_paper.save()
+
+        for line in self.orderline_set.all():
+            line.product.materials_id.remaining += adjust_by * line.qty
+            line.product.materials_id.save()
+
+        for dec_line in self.decorationline_set.all():
+            dec_line.decorations.remaining += adjust_by * dec_line.dec_qty
+            dec_line.decorations.save()
+
+    def save(self, *args, **kwargs):
+        if self.pk is not None:
+            old_order = Order.objects.get(pk=self.pk)
+            old_order.adjust_inventory(1)  # Revert inventory changes from the old order
+        super().save(*args, **kwargs)
+        self.adjust_inventory(-1)  # Apply inventory changes from the new/updated order
+
+    def delete(self, *args, **kwargs):
+        self.adjust_inventory(1)  # Revert inventory changes before deleting
+        super().delete(*args, **kwargs)
 
     def __str__(self):
         return f'{self.client}'
