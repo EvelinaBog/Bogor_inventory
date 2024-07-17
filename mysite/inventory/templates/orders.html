@@ -2,28 +2,11 @@
 {% block title %}Orders{% endblock %}
 
 {% block content %}
-
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
-
-<style>
-    .btn-info-custom {
-        background-color: #17a2b8;
-        color: white;
-    }
-    .btn-info-custom:hover {
-        background-color: #138496;
-        color: white;
-    }
-    .btn-danger-custom {
-        background-color: #dc3545;
-        color: white;
-    }
-    .btn-danger-custom:hover {
-        background-color: #c82333;
-        color: white;
-    }
-</style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
 
 <h1 class="my-4">Orders</h1>
 <div class="card shadow-sm mb-4">
@@ -34,36 +17,56 @@
                 <tr>
                     <th scope="col">Client</th>
                     <th scope="col">Products</th>
+                    <th scope="col">Quantity</th>
                     <th scope="col">Decorations</th>
+                    <th scope="col">Quantity</th>
                     <th scope="col">Wrapping Paper Quantity</th>
                     <th scope="col">Total</th>
                     <th scope="col">Expenses</th>
                     <th scope="col">Profit</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Deadline</th>
                     <th scope="col">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for order in orders %}
                 <tr>
-                    <td>{{ order.client }}</td>
+                    <td><strong>{{ order.client }}</strong></td>
                     <td>
                         <ul class="list-unstyled">
                             {% for line in order.orderline_set.all %}
-                            <li>{{ line.qty }}x {{ line.product }}</li>
+                            <li>{{ line.product.color }} Roses</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        <ul class="list-unstyled">
+                            {% for line in order.orderline_set.all %}
+                            <li>{{ line.qty }}</li>
                             {% endfor %}
                         </ul>
                     </td>
                     <td>
                         <ul class="list-unstyled">
                             {% for dec_line in order.decorationline_set.all %}
-                            <li>{{ dec_line.dec_qty }}x {{ dec_line.decorations }}</li>
+                            <li>{{ dec_line.decorations }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        <ul class="list-unstyled">
+                            {% for dec_line in order.decorationline_set.all %}
+                            <li>{{ dec_line.dec_qty }}</li>
                             {% endfor %}
                         </ul>
                     </td>
                     <td>{{ order.wrapping_paper_qty }}</td>
-                    <td>{{ order.total }}</td>
+                    <td><strong>{{ order.total }}</strong></td>
                     <td>{{ order.expenses }}</td>
                     <td>{{ order.profit }}</td>
+                    <td>{{ order.colored_status|safe }}</td>
+                    <td>{{ order.deadline|date:"Y-m-d" }}</td>
                     <td>
                         <a href="{% url 'edit_order' order.id %}" class="btn btn-info-custom">
                             <i class="bi bi-pencil"></i>

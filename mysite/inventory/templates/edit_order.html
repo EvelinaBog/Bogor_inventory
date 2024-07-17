@@ -18,24 +18,24 @@
     .custom-label {
         font-weight: bold;
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 5px.
     }
     .form-group {
-        margin-bottom: 15px;
+        margin-bottom: 15px.
     }
     .back-btn {
-        display: block;
-        margin-top: 20px;
-        padding: 10px 20px;
-        background-color: #6c757d;
-        color: white;
-        border-radius: 5px;
-        text-decoration: none;
-        text-align: center;
-        transition: background-color 0.3s ease;
+        display: block.
+        margin-top: 20px.
+        padding: 10px 20px.
+        background-color: #6c757d.
+        color: white.
+        border-radius: 5px.
+        text-decoration: none.
+        text-align: center.
+        transition: background-color 0.3s ease.
     }
     .back-btn:hover {
-        background-color: #5a6268;
+        background-color: #5a6268.
     }
 </style>
 
@@ -55,6 +55,14 @@
                     <div class="form-group">
                         <label for="{{ order_form.wrapping_paper_qty.id_for_label }}" class="form-label"><i class="fas fa-box-open"></i> {{ order_form.wrapping_paper_qty.label }}</label>
                         {{ order_form.wrapping_paper_qty }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ order_form.status.id_for_label }}" class="form-label"><i class="fas fa-flag"></i> {{ order_form.status.label }}</label>
+                        {{ order_form.status }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ order_form.deadline.id_for_label }}" class="form-label"><i class="fas fa-calendar"></i> {{ order_form.deadline.label }}</label>
+                        {{ order_form.deadline }}
                     </div>
                     <hr>
                     <div>

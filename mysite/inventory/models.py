@@ -1,4 +1,7 @@
 from django.db import models
+from datetime import datetime, timedelta
+from django.utils.html import format_html
+from django.utils.timezone import now
 
 
 class Silk(models.Model):
@@ -88,6 +91,49 @@ class Order(models.Model):
     client = models.ForeignKey('Client', on_delete=models.CASCADE, null=True)
     wrapping_paper = models.ForeignKey('Materials', on_delete=models.SET_NULL, null=True, blank=True, related_name='wrapping_paper')
     wrapping_paper_qty = models.IntegerField(verbose_name='Wrapping Paper Quantity', default=0, blank=True, null=True)
+    deadline = models.DateTimeField(verbose_name="Deadline", default=(datetime.today() + timedelta(days=10)))
+
+    def is_overdue(self):
+        return self.deadline < datetime.today()
+
+    CHOICES = (
+        ("k", 'Confirmed'),
+        ("c", "Cancelled"),
+        ("i", "In progress"),
+        ("d", "Done"),
+    )
+
+    status = models.CharField(verbose_name="Status", max_length=1, default="k", choices=CHOICES)
+
+    def status_color(self):
+        if self.status == 'd':
+            return 'green'
+        elif self.status == 'c':
+            return 'grey'
+        elif self.status in ['k', 'i']:
+            if self.deadline < now():
+                return 'red'
+            elif self.deadline - timedelta(days=1) <= now():
+                return 'yellow'
+            else:
+                return 'blue'
+        return 'blue'
+
+    def colored_status(self):
+        color = self.status_color()
+        status_display = dict(self.CHOICES).get(self.status, 'Unknown')
+        return format_html(
+            '<span style="color: {};">{}</span>',
+            color,
+            status_display,
+        )
+
+    colored_status.short_description = 'Status'
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # only set deadline on creation
+            self.deadline = now() + timedelta(days=7)
+        super(Order, self).save(*args, **kwargs)
 
     def total(self):
         total_paper_price = self.wrapping_paper.price * self.wrapping_paper_qty if self.wrapping_paper and self.wrapping_paper_qty else 0

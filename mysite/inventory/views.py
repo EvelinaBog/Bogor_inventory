@@ -3,6 +3,9 @@ from .models import Silk, Decorations, Materials, Order, OrderLine, DecorationLi
 from .forms import SilkForm, DecorationsForm, MaterialsForm, OrderForm, OrderLineForm, DecorationLineForm, ClientForm, \
     ProductForm
 from django.forms import inlineformset_factory
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.utils.timezone import now
 
 
 def index(request):
@@ -130,6 +133,13 @@ def orders(request):
     return render(request, 'orders.html', {'orders': order_list})
 
 
+def update_order_status(request, order_id, status):
+    order = get_object_or_404(Order, id=order_id)
+    order.status = status
+    order.save()
+    return HttpResponseRedirect(reverse('orders'))
+
+
 def delete_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     if request.method == 'POST':
@@ -164,37 +174,6 @@ def add_decoration_line(request, order_id):
     else:
         form = DecorationLineForm()
     return render(request, 'add_decoration_line.html', {'form': form, 'order': order})
-
-
-def edit_order(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
-    OrderLineFormSet = inlineformset_factory(Order, OrderLine, form=OrderLineForm, extra=0, can_delete=True)
-    DecorationLineFormSet = inlineformset_factory(Order, DecorationLine, form=DecorationLineForm, extra=1,
-                                                  can_delete=True)
-
-    if request.method == 'POST':
-        order_form = OrderForm(request.POST, instance=order)
-        order_line_formset = OrderLineFormSet(request.POST, instance=order)
-        decoration_line_formset = DecorationLineFormSet(request.POST, instance=order)
-
-        if order_form.is_valid() and order_line_formset.is_valid() and decoration_line_formset.is_valid():
-            # Adjust inventory before saving changes
-            order.update_inventory(-1)
-            order_form.save()
-            order_line_formset.save()
-            decoration_line_formset.save()
-            order.update_inventory(1)
-            return redirect('orders')
-    else:
-        order_form = OrderForm(instance=order)
-        order_line_formset = OrderLineFormSet(instance=order)
-        decoration_line_formset = DecorationLineFormSet(instance=order)
-
-    return render(request, 'edit_order.html', {
-        'order_form': order_form,
-        'formset': order_line_formset,
-        'decoration_line_formset': decoration_line_formset,
-    })
 
 
 def add_order(request):

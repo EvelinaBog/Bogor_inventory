@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import update_order_status
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -19,5 +20,5 @@ urlpatterns = [
     path('silk/delete/<int:silk_id>/', views.delete_silk, name='delete-silk'),
     path('decoration/delete/<int:decoration_id>/', views.delete_decoration, name='delete-decoration'),
     path('material/delete/<int:material_id>/', views.delete_material, name='delete-material'),
+    path('update_order_status/<int:order_id>/<str:status>/', update_order_status, name='update_order_status'),
 ]
-

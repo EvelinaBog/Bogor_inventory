@@ -33,10 +33,12 @@ class ClientForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['wrapping_paper', 'wrapping_paper_qty']
+        fields = ['wrapping_paper', 'wrapping_paper_qty', 'status', 'deadline']
         widgets = {
             'wrapping_paper': forms.Select(attrs={'class': 'form-control'}),
             'wrapping_paper_qty': forms.NumberInput(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'deadline': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
 
 
@@ -53,7 +55,8 @@ class OrderLineForm(forms.ModelForm):
 
 
 class DecorationLineForm(forms.ModelForm):
-    decorations = forms.ModelChoiceField(queryset=Decorations.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    decorations = forms.ModelChoiceField(queryset=Decorations.objects.all(),
+                                         widget=forms.Select(attrs={'class': 'form-control'}))
 
     class Meta:
         model = DecorationLine
@@ -65,7 +68,8 @@ class DecorationLineForm(forms.ModelForm):
 
 class ProductForm(forms.ModelForm):
     color = forms.ModelChoiceField(queryset=Silk.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
-    materials_id = forms.ModelChoiceField(queryset=Materials.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
+    materials_id = forms.ModelChoiceField(queryset=Materials.objects.all(),
+                                          widget=forms.Select(attrs={'class': 'form-control'}))
 
     class Meta:
         model = Product
@@ -73,5 +77,3 @@ class ProductForm(forms.ModelForm):
         widgets = {
             'price': forms.NumberInput(attrs={'class': 'form-control'}),
         }
-
-
