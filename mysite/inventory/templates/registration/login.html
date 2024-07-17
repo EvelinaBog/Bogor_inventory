@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #e0e0e0; /* Slightly darker gray background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .login-container {
+        background-color: #f0f0f0; /* Light gray container */
+        padding: 30px 50px;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 800px; /* Wider container */
+        box-sizing: border-box;
+    }
+
+    .login-container h2 {
+        margin: 0 0 15px;
+        font-size: 28px;
+        text-align: center;
+        color: #333333;
+    }
+
+    .login-container p {
+        color: #ff6666;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .login-container form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .login-container label {
+        margin-bottom: 5px;
+        font-size: 14px;
+        color: #666666;
+    }
+
+    .login-container input[type="text"],
+    .login-container input[type="password"] {
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        border: 1px solid #cccccc;
+        border-radius: 5px;
+        font-size: 16px;
+        background-color: #ffffff; /* White input fields */
+        color: #333333;
+        transition: border-color 0.3s;
+    }
+
+    .login-container input[type="text"]:focus,
+    .login-container input[type="password"]:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    .login-container input[type="submit"] {
+        padding: 10px 15px;
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+
+    .login-container input[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+
+    .login-container a {
+        color: #007bff;
+        text-decoration: none;
+        text-align: center;
+        display: block;
+        margin-top: 10px;
+        font-size: 14px;
+        transition: color 0.3s;
+    }
+
+    .login-container a:hover {
+        color: #0056b3;
+    }
+</style>
+
+<div class="login-container">
+    <h2>Login</h2>
+
+    {% if form.errors %}
+    <p>Login error, please try again!</p>
+    {% endif %}
+
+    {% if next %}
+    {% if user.is_authenticated %}
+    <p>You do not have access to this information. You must log in.</p>
+    {% endif %}
+    {% endif %}
+
+    <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        <label for="id_username">Username:</label>
+        {{ form.username }}
+
+        <label for="id_password">Password:</label>
+        {{ form.password }}
+
+        <input type="submit" value="Login"/>
+        <input type="hidden" name="next" value="{{ next }}"/>
+    </form>
+
+    <p><a href="{% url 'password_reset' %}">Forgot password?</a></p>
+</div>
+{% endblock %}

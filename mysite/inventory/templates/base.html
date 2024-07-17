@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Inventory & Order Management{% endblock %}</title>
+    <!-- Include Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js biblioteka -->
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Public Sans', sans-serif;
             background-color: #f8f9fa;
             margin: 0;
             padding: 0;
@@ -22,33 +23,68 @@
         .navbar {
             background-color: #343a40;
             color: #fff;
-            padding: 1rem;
+            padding: 0.5rem 1rem; /* Adjusted padding to reduce height */
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
         }
-        .navbar a {
+        .navbar .logo a {
+            font-family: 'Public Sans', sans-serif;
+            font-size: 1.5rem;
             color: #fff;
             text-decoration: none;
-            margin-left: 1rem;
+            font-weight: bold;
+            transition: color 0.3s ease;
         }
-        .profile {
+        .navbar .logo a:hover {
+            color: #17a2b8;
+            text-shadow: 0 0 10px rgba(23, 162, 184, 0.7);
+        }
+        .navbar .logo a::before {
+            content: '🌹';
+            margin-right: 8px;
+            color: #17a2b8;
+            transition: transform 0.3s ease;
+        }
+        .navbar .logo a:hover::before {
+            transform: rotate(360deg);
+        }
+        .navbar .nav-links {
             display: flex;
             align-items: center;
         }
-        .profile i {
-            font-size: 1.5rem;
-            margin-right: 0.5rem;
+        .navbar .nav-links .profile {
+            display: flex;
+            align-items: center;
+        }
+        .navbar .nav-links .profile .user-info {
+            display: flex;
+            align-items: center;
+            margin-right: 1rem;
+        }
+        .navbar .nav-links .profile .user-info span {
+            margin-left: 0.5rem;
+        }
+        .navbar .nav-links .profile form {
+            margin-left: 1rem;
+        }
+        .navbar .nav-links .profile form .btn {
+            font-size: 1.2rem; /* Increased font size */
+            padding: 0.5rem 1rem; /* Increased padding */
         }
         .sidebar {
             background-color: #343a40;
             color: #fff;
             width: 250px;
             position: fixed;
-            top: 0;
+            top: 48px; /* Adjusted height of the navbar */
             left: 0;
-            height: 100%;
+            height: calc(100% - 48px); /* Subtract height of navbar */
             padding-top: 2rem;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
         }
@@ -65,6 +101,7 @@
         .main-content {
             margin-left: 250px;
             padding: 2rem;
+            margin-top: 48px; /* Adjusted height of the navbar */
             flex: 1;
         }
         .container {
@@ -109,8 +146,6 @@
             color: #fff;
             text-align: center;
             padding: 1rem;
-            position: relative;
-            bottom: 0;
             width: 100%;
             margin-top: auto;
         }
@@ -120,18 +155,25 @@
 <body>
 <div class="navbar">
     <div class="logo">
-        <a href="#">Satin Rose Bouquets</a>
+        <a href="https://bogor.lt/">Bogor.lt</a>
     </div>
     <div class="nav-links">
-        {% if user.is_authenticated %}
         <div class="profile">
-            <i class="bi bi-person-circle"></i>
-            <span>{{ user.username }}</span>
-            <a href="#" style="margin-left: 1rem;">Logout</a>
+            {% if user.is_authenticated %}
+                <div class="user-info">
+                    <svg class="bi bi-person" width="1.5em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M13 14s1 0 1-1-1-4-6-4-6 3-6 4 1 1 1 1h10zm-9.995-.944v-.002.002zM3.022 13h9.956a.274.274 0 00.014-.002l.008-.002c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664a1.05 1.05 0 00.022.004zm9.974.056v-.002.002zM8 7a2 2 0 100-4 2 2 0 000 4zm3-2a3 3 0 11-6 0 3 3 0 016 0z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>{{ user.get_username }}</span>
+                </div>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="btn btn-link nav-link active" type="submit"><i class="bi bi-box-arrow-right"></i></button>
+                </form>
+            {% else %}
+                <a class="nav-link" href="{% url 'login'%}">Log in</a>
+            {% endif %}
         </div>
-        {% else %}
-        <a href="#">Login</a>
-        {% endif %}
     </div>
 </div>
 <div class="sidebar">
@@ -146,7 +188,7 @@
     {% endblock %}
 </div>
 <div class="footer">
-    &copy; 2024 Satin Rose Bouquets. All rights reserved.
+    &copy; 2024 Bogor.lt
 </div>
 {% block extra_scripts %}{% endblock %}
 </body>

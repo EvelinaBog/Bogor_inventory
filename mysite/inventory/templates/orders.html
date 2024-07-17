@@ -15,58 +15,58 @@
             <table class="table align-middle">
                 <thead class="table-dark">
                 <tr>
-                    <th scope="col">Client</th>
-                    <th scope="col">Products</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Decorations</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Wrapping Paper Quantity</th>
-                    <th scope="col">Total</th>
-                    <th scope="col">Expenses</th>
-                    <th scope="col">Profit</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Deadline</th>
-                    <th scope="col">Actions</th>
+                    <th scope="col" style=" text-align: center">Client</th>
+                    <th scope="col" style=" text-align: center">Products</th>
+                    <th scope="col" style=" text-align: center">Quantity</th>
+                    <th scope="col" style=" text-align: center">Decorations</th>
+                    <th scope="col" style=" text-align: center">Quantity</th>
+                    <th scope="col" style=" text-align: center">W. P. Quantity</th>
+                    <th scope="col" style=" text-align: center">Total</th>
+                    <th scope="col" style=" text-align: center">Expenses</th>
+                    <th scope="col" style=" text-align: center">Profit</th>
+                    <th scope="col" style=" text-align: center">Status</th>
+                    <th scope="col" style=" text-align: center">Deadline</th>
+                    <th scope="col" style=" text-align: center">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for order in orders %}
                 <tr>
-                    <td><strong>{{ order.client }}</strong></td>
+                    <td ><strong>{{ order.client }}</strong></td>
                     <td>
                         <ul class="list-unstyled">
                             {% for line in order.orderline_set.all %}
-                            <li>{{ line.product.color }} Roses</li>
+                            <li style=" text-align: center">{{ line.product.color }} Roses</li>
                             {% endfor %}
                         </ul>
                     </td>
                     <td>
                         <ul class="list-unstyled">
                             {% for line in order.orderline_set.all %}
-                            <li>{{ line.qty }}</li>
+                            <li style=" text-align: center">{{ line.qty }}</li>
                             {% endfor %}
                         </ul>
                     </td>
                     <td>
                         <ul class="list-unstyled">
                             {% for dec_line in order.decorationline_set.all %}
-                            <li>{{ dec_line.decorations }}</li>
+                            <li style=" text-align: center">{{ dec_line.decorations }}</li>
                             {% endfor %}
                         </ul>
                     </td>
                     <td>
                         <ul class="list-unstyled">
                             {% for dec_line in order.decorationline_set.all %}
-                            <li>{{ dec_line.dec_qty }}</li>
+                            <li style=" text-align: center">{{ dec_line.dec_qty }}</li>
                             {% endfor %}
                         </ul>
                     </td>
-                    <td>{{ order.wrapping_paper_qty }}</td>
-                    <td><strong>{{ order.total }}</strong></td>
-                    <td>{{ order.expenses }}</td>
-                    <td>{{ order.profit }}</td>
-                    <td>{{ order.colored_status|safe }}</td>
-                    <td>{{ order.deadline|date:"Y-m-d" }}</td>
+                    <td style=" text-align: center">{{ order.wrapping_paper_qty }}</td>
+                    <td style=" text-align: center"><strong>{{ order.total }}</strong></td>
+                    <td style=" text-align: center">{{ order.expenses }}</td>
+                    <td style=" text-align: center">{{ order.profit }}</td>
+                    <td style=" text-align: center">{{ order.colored_status|safe }}</td>
+                    <td style=" text-align: center">{{ order.deadline|date:"Y-m-d" }}</td>
                     <td>
                         <a href="{% url 'edit_order' order.id %}" class="btn btn-info-custom">
                             <i class="bi bi-pencil"></i>

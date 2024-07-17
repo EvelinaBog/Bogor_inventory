@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Logging out{% endblock %}
+
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #e0e0e0; /* Slightly darker gray background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .logout-container {
+        background-color: #f0f0f0; /* Light gray container */
+        padding: 60px 100px; /* Increased padding for a larger container */
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 800px; /* Wider container */
+        box-sizing: border-box;
+        text-align: center; /* Center content within the container */
+    }
+
+    .logout-container p {
+        font-size: 24px; /* Larger font size */
+        color: #333333;
+        margin-bottom: 30px; /* Increased margin for spacing */
+    }
+
+    .logout-container a {
+        padding: 15px 30px; /* Increased padding for a larger button */
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 18px; /* Larger font size */
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .logout-container a:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="logout-container">
+    <p>Successfully logged out</p>
+    <a href="{% url 'login' %}">Log in</a>
+</div>
+{% endblock %}

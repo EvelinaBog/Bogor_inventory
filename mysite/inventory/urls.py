@@ -1,8 +1,9 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 from .views import update_order_status
 
 urlpatterns = [
+    path('accounts/', include('django.contrib.auth.urls')),
     path('', views.index, name='index'),
     path('inventory/', views.inventory, name='inventory'),
     path('edit/silk/<int:silk_id>/', views.edit_silk, name='edit-silk'),
